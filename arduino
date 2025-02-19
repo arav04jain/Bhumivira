@@ -1,0 +1,49 @@
+#define BLYNK_TEMPLATE_ID "Your_Template_ID"
+#define BLYNK_DEVICE_NAME "Mine Rover"
+#define BLYNK_AUTH_TOKEN "Your_Auth_Token"
+
+#include <Wire.h>
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include "DHT.h"
+
+#define MQ4_PIN A0
+#define MQ136_PIN A1
+#define MQ7_PIN A2
+#define MQ2_PIN A3
+#define DHT_PIN 4
+#define DHT_TYPE DHT22
+
+char ssid[] = "Your_SSID";
+char pass[] = "Your_PASSWORD";
+
+DHT dht(DHT_PIN, DHT_TYPE);
+BlynkTimer timer;
+
+void sendSensorData() {
+  float methane = analogRead(MQ4_PIN);
+  float h2s = analogRead(MQ136_PIN);
+  float co = analogRead(MQ7_PIN);
+  float smoke = analogRead(MQ2_PIN);
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  Blynk.virtualWrite(V1, methane);
+  Blynk.virtualWrite(V2, h2s);
+  Blynk.virtualWrite(V3, co);
+  Blynk.virtualWrite(V4, smoke);
+  Blynk.virtualWrite(V5, temperature);
+  Blynk.virtualWrite(V6, humidity);
+}
+
+void setup() {
+  Serial.begin(115200);
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  dht.begin();
+  timer.setInterval(2000L, sendSensorData);
+}
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
