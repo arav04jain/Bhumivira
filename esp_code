@@ -1,0 +1,83 @@
+#define BLYNK_TEMPLATE_ID "Your_Template_ID"
+#define BLYNK_DEVICE_NAME "Mine Rover"
+#define BLYNK_AUTH_TOKEN "Your_Auth_Token"
+
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+
+char ssid[] = "Your_SSID";
+char pass[] = "Your_PASSWORD";
+
+#define MOTOR1A  14
+#define MOTOR1B  15
+#define MOTOR2A  16
+#define MOTOR2B  17
+
+void moveForward() {
+  digitalWrite(MOTOR1A, HIGH);
+  digitalWrite(MOTOR1B, LOW);
+  digitalWrite(MOTOR2A, HIGH);
+  digitalWrite(MOTOR2B, LOW);
+}
+
+void moveBackward() {
+  digitalWrite(MOTOR1A, LOW);
+  digitalWrite(MOTOR1B, HIGH);
+  digitalWrite(MOTOR2A, LOW);
+  digitalWrite(MOTOR2B, HIGH);
+}
+
+void moveLeft() {
+  digitalWrite(MOTOR1A, LOW);
+  digitalWrite(MOTOR1B, HIGH);
+  digitalWrite(MOTOR2A, HIGH);
+  digitalWrite(MOTOR2B, LOW);
+}
+
+void moveRight() {
+  digitalWrite(MOTOR1A, HIGH);
+  digitalWrite(MOTOR1B, LOW);
+  digitalWrite(MOTOR2A, LOW);
+  digitalWrite(MOTOR2B, HIGH);
+}
+
+void stopMovement() {
+  digitalWrite(MOTOR1A, LOW);
+  digitalWrite(MOTOR1B, LOW);
+  digitalWrite(MOTOR2A, LOW);
+  digitalWrite(MOTOR2B, LOW);
+}
+
+BLYNK_WRITE(V10) { 
+  if (param.asInt()) moveForward(); 
+  else stopMovement();
+}
+
+BLYNK_WRITE(V11) { 
+  if (param.asInt()) moveBackward(); 
+  else stopMovement();
+}
+
+BLYNK_WRITE(V12) { 
+  if (param.asInt()) moveLeft(); 
+  else stopMovement();
+}
+
+BLYNK_WRITE(V13) { 
+  if (param.asInt()) moveRight(); 
+  else stopMovement();
+}
+
+void setup() {
+  Serial.begin(115200);
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  pinMode(MOTOR1A, OUTPUT);
+  pinMode(MOTOR1B, OUTPUT);
+  pinMode(MOTOR2A, OUTPUT);
+  pinMode(MOTOR2B, OUTPUT);
+}
+
+void loop() {
+  Blynk.run();
+}
